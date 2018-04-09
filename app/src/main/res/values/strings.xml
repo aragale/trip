@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">bysjDemo</string>
-    <string name="location">地图展示和定位</string>
+    <string name="map">基本地图展示</string>
+    <string name="location">单点定位</string>
 </resources>

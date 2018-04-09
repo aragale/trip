@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 //        setTitle(getTitle() + " v" + VersionInfo.getApiVersion());
         ListView mListView = (ListView) findViewById(R.id.listView);
         // 添加ListItem，设置事件响应
-        mListView.setAdapter(new DemoListAdapter());
+        mListView.setAdapter(new ListAdapter());
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View v, int index,
                                     long arg3) {
@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(mReceiver, iFilter);
     }
 
-    private class DemoListAdapter extends BaseAdapter {
-        public DemoListAdapter() {
+    private class ListAdapter extends BaseAdapter {
+        public ListAdapter() {
             super();
         }
 
@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static final DemoInfo[] DEMOS = {
+            new DemoInfo(R.string.map,
+                    R.string.map, Map.class),
             new DemoInfo(R.string.location,
                     R.string.location, Location.class),
     };
