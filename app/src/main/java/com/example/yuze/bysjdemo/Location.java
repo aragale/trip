@@ -6,6 +6,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -38,12 +40,21 @@ public class Location extends AppCompatActivity implements SensorEventListener {
     MapView mMapView;
     BaiduMap mBaiduMap;
 
-    // UI相关
-//    OnCheckedChangeListener radioButtonListener;
+    //    OnCheckedChangeListener radioButtonListener;// UI相关
 //    Button requestLocButton;
     boolean isFirstLoc = true; // 是否首次定位
     private MyLocationData locData;
     private float direction;
+
+    private static final int MENU_LOGIN = 1;
+    private static final int MENU_FOOTPRINT = 2;
+    private static final int MENU_SEND = 3;
+    private static final int MENU_CLOUD_AYNCING = 4;
+
+    private MenuItem login_menu;
+    private MenuItem footprint_menu;
+    private MenuItem send_menu;
+    private MenuItem cloud_ayncing_menu;
 
 
     @Override
@@ -128,6 +139,38 @@ public class Location extends AppCompatActivity implements SensorEventListener {
         option.setScanSpan(1000);
         mLocClient.setLocOption(option);
         mLocClient.start();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(Menu.NONE, MENU_LOGIN, 0, "Login").setIcon(android.R.drawable.ic_media_play).setEnabled(true);
+        menu.add(Menu.NONE, MENU_FOOTPRINT, 0, "Footprint").setIcon(android.R.drawable.ic_menu_info_details).setEnabled(true);
+        menu.add(Menu.NONE, MENU_SEND, 0, "Send").setIcon(android.R.drawable.ic_menu_send).setEnabled(true);
+        menu.add(Menu.NONE, MENU_CLOUD_AYNCING, 0, "Cloud ayncing").setIcon(android.R.drawable.ic_popup_sync).setEnabled(true);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()){
+//            case MENU_LOGIN:
+//                footprint_menu.setEnabled(true);
+//                send_menu.setEnabled(true);
+//                cloud_ayncing_menu.setEnabled(true);
+//                return true;
+//            case MENU_FOOTPRINT:
+//        }
+//        return false;
+        if (item.getItemId() == MENU_LOGIN) {
+            footprint_menu.setEnabled(true);
+            send_menu.setEnabled(true);
+            cloud_ayncing_menu.setEnabled(true);
+            return true;
+        } else {
+            item.setEnabled(true);
+        }
+        return false;
     }
 
     @Override
