@@ -2,4 +2,9 @@
     <string name="app_name">bysjDemo</string>
     <string name="map">基本地图展示</string>
     <string name="location">单点定位</string>
+
+    <string name="menu_login">Login</string>
+    <string name="menu_footprint">FootPrint</string>
+    <string name="menu_send">Send</string>
+    <string name="menu_cloud_syncing">Syncing recording to the cloud</string>
 </resources>

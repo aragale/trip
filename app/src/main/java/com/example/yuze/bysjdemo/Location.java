@@ -1,5 +1,6 @@
 package com.example.yuze.bysjdemo;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -144,24 +145,24 @@ public class Location extends AppCompatActivity implements SensorEventListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(Menu.NONE, MENU_LOGIN, 0, "Login").setIcon(android.R.drawable.ic_media_play).setEnabled(true);
-        menu.add(Menu.NONE, MENU_FOOTPRINT, 0, "Footprint").setIcon(android.R.drawable.ic_menu_info_details).setEnabled(true);
-        menu.add(Menu.NONE, MENU_SEND, 0, "Send").setIcon(android.R.drawable.ic_menu_send).setEnabled(true);
-        menu.add(Menu.NONE, MENU_CLOUD_AYNCING, 0, "Cloud ayncing").setIcon(android.R.drawable.ic_popup_sync).setEnabled(true);
+        login_menu = menu.add(Menu.NONE, MENU_LOGIN, 0, "Login").setIcon(android.R.drawable.ic_media_play).setEnabled(true);
+        footprint_menu = menu.add(Menu.NONE, MENU_FOOTPRINT, 0, "Footprint").setIcon(android.R.drawable.ic_menu_info_details).setEnabled(true);
+        send_menu = menu.add(Menu.NONE, MENU_SEND, 0, "Send").setIcon(android.R.drawable.ic_menu_send).setEnabled(true);
+        cloud_ayncing_menu = menu.add(Menu.NONE, MENU_CLOUD_AYNCING, 0, "Cloud ayncing").setIcon(android.R.drawable.ic_popup_sync).setEnabled(true);
+
+        login_menu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                login_menu.setIntent(new Intent(Location.this, Login.class));
+                return true;
+            }
+        });
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()){
-//            case MENU_LOGIN:
-//                footprint_menu.setEnabled(true);
-//                send_menu.setEnabled(true);
-//                cloud_ayncing_menu.setEnabled(true);
-//                return true;
-//            case MENU_FOOTPRINT:
-//        }
-//        return false;
         if (item.getItemId() == MENU_LOGIN) {
             footprint_menu.setEnabled(true);
             send_menu.setEnabled(true);
