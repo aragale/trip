@@ -149,29 +149,28 @@ public class Location extends AppCompatActivity implements SensorEventListener {
         footprint_menu = menu.add(Menu.NONE, MENU_FOOTPRINT, 0, "Footprint").setIcon(android.R.drawable.ic_menu_info_details).setEnabled(true);
         send_menu = menu.add(Menu.NONE, MENU_SEND, 0, "Send").setIcon(android.R.drawable.ic_menu_send).setEnabled(true);
         cloud_ayncing_menu = menu.add(Menu.NONE, MENU_CLOUD_AYNCING, 0, "Cloud ayncing").setIcon(android.R.drawable.ic_popup_sync).setEnabled(true);
-
-        login_menu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                login_menu.setIntent(new Intent(Location.this, Login.class));
-                return true;
-            }
-        });
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == MENU_LOGIN) {
-            footprint_menu.setEnabled(true);
-            send_menu.setEnabled(true);
-            cloud_ayncing_menu.setEnabled(true);
-            return true;
-        } else {
-            item.setEnabled(true);
+        Intent intent = new Intent();
+        switch (item.getItemId()) {
+            case 1:
+                intent.setClass(Location.this, Login.class);
+                Location.this.startActivity(intent);
+                startActivity(intent);
+            case 2:
+                finish();
+                break;
+            case 3:
+                finish();
+                break;
+            case 4:
+                finish();
+                break;
         }
-        return false;
+        return super.onContextItemSelected(item);
     }
 
     @Override
