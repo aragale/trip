@@ -1,5 +1,7 @@
 package com.example.yuze.bysjdemo;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -28,9 +30,7 @@ public class Location extends AppCompatActivity implements SensorEventListener {
     LocationClient mLocClient;
     public MyLocationListener mListener = new MyLocationListener();
     private MyLocationConfiguration.LocationMode mCurrentMode;
-    //    BitmapDescriptor mCurrentMarker;
-//    private static final int accuracyCircleFillColor = 0xAAFFFF88;
-//    private static final int accuracyCircleStrokeColor = 0xAA00FF00;
+
     private SensorManager mSensorManager;
     private Double lastX = 0.0;
     private int mCurrentDirection = 0;
@@ -41,8 +41,6 @@ public class Location extends AppCompatActivity implements SensorEventListener {
     MapView mMapView;
     BaiduMap mBaiduMap;
 
-    //    OnCheckedChangeListener radioButtonListener;// UI相关
-//    Button requestLocButton;
     boolean isFirstLoc = true; // 是否首次定位
     private MyLocationData locData;
     private float direction;
@@ -50,81 +48,23 @@ public class Location extends AppCompatActivity implements SensorEventListener {
     private static final int MENU_LOGIN = 1;
     private static final int MENU_FOOTPRINT = 2;
     private static final int MENU_SEND = 3;
-    private static final int MENU_CLOUD_AYNCING = 4;
+    private static final int MENU_CLOUD_SYNCING = 4;
 
-    private MenuItem login_menu;
-    private MenuItem footprint_menu;
-    private MenuItem send_menu;
-    private MenuItem cloud_ayncing_menu;
+    static final String DATABASE_NAME = "andtriplog.db";
+    static final int DATABASE_VERSION = 7;
+    public DBHelper mAndTripLogDB;
 
+    private ExportThread mExportThread;
+    private ProgressDialog mProgressDialog;
+    private AlertDialog mDleteDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location);
 
-//        requestLocButton = (Button)findViewById(R.id.button1);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);//获取传感器管理服务
         mCurrentMode = MyLocationConfiguration.LocationMode.FOLLOWING;
-//        requestLocButton.setText("普通");
-//        View.OnClickListener btnClickListener = new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                switch (mCurrentMode){
-//                    case NORMAL:
-//                        requestLocButton.setText("跟随");
-//                        mCurrentMode = MyLocationConfiguration.LocationMode.FOLLOWING;
-//                        mBaiduMap.setMyLocationConfiguration(new MyLocationConfiguration(mCurrentMode,true,mCurrentMarker));
-//                        MapStatus.Builder builder1 = new MapStatus.Builder();
-//                        builder1.overlook(0);
-//                        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder1.build()));
-//                        break;
-//                    case COMPASS:
-//                        requestLocButton.setText("普通");
-//                        mCurrentMode = MyLocationConfiguration.LocationMode.NORMAL;
-//                        mBaiduMap.setMyLocationConfiguration(new MyLocationConfiguration(
-//                                mCurrentMode, true, mCurrentMarker));
-//                        MapStatus.Builder builder2 = new MapStatus.Builder();
-//                        builder2.overlook(0);
-//                        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder2.build()));
-//                        break;
-//                    case FOLLOWING:
-//                        requestLocButton.setText("罗盘");
-//                        mCurrentMode = MyLocationConfiguration.LocationMode.COMPASS;
-//                        mBaiduMap.setMyLocationConfiguration(new MyLocationConfiguration(
-//                                mCurrentMode, true, mCurrentMarker));
-//                        break;
-//                    default:
-//                        break;
-//
-//                }
-//            }
-//        };
-//
-//        requestLocButton.setOnClickListener(btnClickListener);
-//
-//        RadioGroup group = (RadioGroup) this.findViewById(R.id.radioGroup);
-//        radioButtonListener = new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                if (checkedId == R.id.defaulticon) {
-//                    // 传入null则，恢复默认图标
-//                    mCurrentMarker = null;
-//                    mBaiduMap
-//                            .setMyLocationConfigeration(new MyLocationConfiguration(
-//                                    mCurrentMode, true, null));
-//                }
-//                if (checkedId == R.id.customicon) {
-//                    // 修改为自定义marker
-//                    mCurrentMarker = BitmapDescriptorFactory
-//                            .fromResource(R.drawable.icon_geo);
-//                    mBaiduMap.setMyLocationConfiguration(new MyLocationConfiguration(
-//                            mCurrentMode, true, mCurrentMarker,
-//                            accuracyCircleFillColor, accuracyCircleStrokeColor));
-//                }
-//            }
-//        };
-//        group.setOnCheckedChangeListener(radioButtonListener);
 
         // 地图初始化
         mMapView = (MapView) findViewById(R.id.bmapView);
@@ -140,15 +80,18 @@ public class Location extends AppCompatActivity implements SensorEventListener {
         option.setScanSpan(1000);
         mLocClient.setLocOption(option);
         mLocClient.start();
+
+        mAndTripLogDB = new DBHelper(this);
+        mAndTripLogDB.startDatabase();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        login_menu = menu.add(Menu.NONE, MENU_LOGIN, 0, "Login").setIcon(android.R.drawable.ic_media_play).setEnabled(true);
-        footprint_menu = menu.add(Menu.NONE, MENU_FOOTPRINT, 0, "Footprint").setIcon(android.R.drawable.ic_menu_info_details).setEnabled(true);
-        send_menu = menu.add(Menu.NONE, MENU_SEND, 0, "Send").setIcon(android.R.drawable.ic_menu_send).setEnabled(true);
-        cloud_ayncing_menu = menu.add(Menu.NONE, MENU_CLOUD_AYNCING, 0, "Cloud ayncing").setIcon(android.R.drawable.ic_popup_sync).setEnabled(true);
+        menu.add(Menu.NONE, MENU_LOGIN, 0, "Login").setIcon(android.R.drawable.ic_media_play).setEnabled(true);
+        menu.add(Menu.NONE, MENU_FOOTPRINT, 0, "Footprint").setIcon(android.R.drawable.ic_menu_info_details).setEnabled(true);
+        menu.add(Menu.NONE, MENU_SEND, 0, "Send").setIcon(android.R.drawable.ic_menu_send).setEnabled(true);
+        menu.add(Menu.NONE, MENU_CLOUD_SYNCING, 0, "Cloud ayncing").setIcon(android.R.drawable.ic_popup_sync).setEnabled(true);
         return true;
     }
 
@@ -164,13 +107,25 @@ public class Location extends AppCompatActivity implements SensorEventListener {
                 finish();
                 break;
             case 3:
-                finish();
-                break;
+                exportTrip(-1, true);
+                return true;
             case 4:
                 finish();
                 break;
         }
         return super.onContextItemSelected(item);
+    }
+
+    /**
+     * 分享记录
+     *
+     * @param id
+     * @param email
+     */
+    private void exportTrip(long id, boolean email) {
+//        showDialog();
+        mExportThread = new ExportThread(this, id, mProgressDialog, email);
+        mExportThread.start();
     }
 
     @Override

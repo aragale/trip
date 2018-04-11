@@ -44,18 +44,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="trip"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Map"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="地图显示和定位                                                                              "
-            android:screenOrientation="portrait" />
         <activity android:name=".Login" />
-        <activity android:name=".Register"></activity>
+        <activity android:name=".Register" />
+        <activity android:name=".ResetPwd" />
+        <activity android:name=".User" />
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote"></service>
+
     </application>
 
 </manifest>
