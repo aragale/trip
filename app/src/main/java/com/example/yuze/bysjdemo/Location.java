@@ -1,7 +1,9 @@
 package com.example.yuze.bysjdemo;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -49,6 +51,7 @@ public class Location extends AppCompatActivity implements SensorEventListener {
     private static final int MENU_FOOTPRINT = 2;
     private static final int MENU_SEND = 3;
     private static final int MENU_CLOUD_SYNCING = 4;
+    private static final int MENU_SETTING = 5;
 
     static final String DATABASE_NAME = "andtriplog.db";
     static final int DATABASE_VERSION = 7;
@@ -92,6 +95,7 @@ public class Location extends AppCompatActivity implements SensorEventListener {
         menu.add(Menu.NONE, MENU_FOOTPRINT, 0, "Footprint").setIcon(android.R.drawable.ic_menu_info_details).setEnabled(true);
         menu.add(Menu.NONE, MENU_SEND, 0, "Send").setIcon(android.R.drawable.ic_menu_send).setEnabled(true);
         menu.add(Menu.NONE, MENU_CLOUD_SYNCING, 0, "Cloud ayncing").setIcon(android.R.drawable.ic_popup_sync).setEnabled(true);
+        menu.add(Menu.NONE, MENU_SETTING, 0, "Setting").setIcon(android.R.drawable.ic_menu_set_as).setEnabled(true);
         return true;
     }
 
@@ -112,6 +116,9 @@ public class Location extends AppCompatActivity implements SensorEventListener {
             case 4:
                 finish();
                 break;
+            case 5:
+                finish();
+                break;
         }
         return super.onContextItemSelected(item);
     }
@@ -123,10 +130,84 @@ public class Location extends AppCompatActivity implements SensorEventListener {
      * @param email
      */
     private void exportTrip(long id, boolean email) {
-//        showDialog();
+        showDialog(DIALOG_EXPORT_TRIP);
         mExportThread = new ExportThread(this, id, mProgressDialog, email);
         mExportThread.start();
     }
+
+    private static final int DIALOG_EXPORT_TRIP = 1;
+    private static final int DIALOG_CLOUD_SYNC = 2;
+    private static final int DIALOG_DELETE_FOOTPRINT = 3;
+
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DIALOG_EXPORT_TRIP:
+                mProgressDialog = new ProgressDialog(this);
+                mProgressDialog.setTitle("send to ...");
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setMax(100);
+                mProgressDialog.setButton(getText(android.R.string.search_go), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mExportThread.interrupt();
+                    }
+                });
+                mProgressDialog.setProgress(0);
+                return mProgressDialog;
+            case DIALOG_CLOUD_SYNC:
+                return new android.support.v7.app.AlertDialog.Builder(this)
+                        .setIcon(R.drawable.satellite)
+                        .setTitle("cloud syncing")
+                        .setMessage("Syncing recording to the cloud")
+                        .setPositiveButton("Login", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setNegativeButton("regist", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .create();
+            case DIALOG_DELETE_FOOTPRINT:
+//                mDleteDialog = new android.support.v7.app.AlertDialog.Builder(this)
+//                        .setIcon(R.drawable.satellite)
+//                        .setTitle("Delete trip " + delete_id)
+//                        .setMessage(R.string.sure_delete)
+//                        .setPositiveButton(R.string.yes_delete, new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int whichButton) {
+//                                mAndTripLogDB.deleteTrip(delete_id);
+//                                Toast.makeText(this, "Delete " + delete_id, Toast.LENGTH_LONG).show();
+//                                fillList();
+//                            }
+//                        })
+//                        .setNegativeButton(R.string.dont_delete, new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int whichButton) {
+//                                Toast.makeText(this, "Don't Delete " + delete_id, Toast.LENGTH_LONG).show();
+//                            }
+//                        })
+//                        .create();
+//                return mDleteDialog;
+                finish();
+                break;
+        }
+        return null;
+    }
+
+//    private void fillList() {
+//        gpsstateTextView.setText(R.string.tips_not_running);
+//        Cursor lst = mAndTripLogDB.getListing();
+//        startManagingCursor(lst);
+//        Log.w("AndTripLog", "4");//stop输出
+//        listview_trace.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+//
+//        sc_adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, lst, new String[]{"cmt", "descr"},
+//                new int[]{android.R.id.text1, android.R.id.text2});
+//        listview_trace.setAdapter(sc_adapter);
+//    }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {

@@ -53,7 +53,7 @@ public class ExportThread extends Thread {
                     fw.fromCursorString(l, mProgress, this);
                     fw.stopTrk();
                 } else {
-                    Log.w("traveljournal", "Interruped");
+                    Log.w("trip", "Interruped");
                 }
             }
             fw.close();
@@ -62,11 +62,11 @@ public class ExportThread extends Thread {
                 i.setType("image/jpeg");
                 i.putExtra(android.content.Intent.EXTRA_SUBJECT, "The gpx file");
                 i.putExtra(android.content.Intent.EXTRA_STREAM, Uri.parse("file://" + fname));
-                lThis.startActivity(Intent.createChooser(i, "Send gpx data..."));
+                lThis.startActivity(Intent.createChooser(i, "Send footprint to..."));
             }
         } catch (IOException e) {
             e.printStackTrace();
-            Log.w("traveljournal", "Unable to save");
+            Log.w("trip", "Unable to save");
         }
         mProgress.dismiss();
         mProgress.setProgress(0);
